@@ -89,16 +89,8 @@ export default function ResultsPage({ flights }) {
             sx={{
               borderRadius: 2,
               border: '1px solid',
-              borderColor: (t) =>
-                t.palette.mode === 'dark' ? 'rgba(244,67,54,0.4)' : 'rgba(211,47,47,0.28)',
-              bgcolor: (t) =>
-                error
-                  ? t.palette.mode === 'dark'
-                    ? 'rgba(244,67,54,0.10)'
-                    : 'rgba(255,235,238,0.9)'
-                  : t.palette.mode === 'dark'
-                    ? 'rgba(144,202,249,0.05)'
-                    : 'rgba(227,242,253,0.9)',
+              borderColor: 'rgba(211,47,47,0.28)',
+              bgcolor: error ? 'rgba(255,235,238,0.9)' : 'rgba(227,242,253,0.9)',
               px: 1.5,
               py: 1.25,
             }}

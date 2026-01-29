@@ -1,13 +1,13 @@
 import { CssBaseline, Container, Box } from '@mui/material'
 import { ThemeProvider } from '@mui/material/styles'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import CloudLayer from './components/CloudLayer.jsx'
 import AutonomousFlight from './components/AutonomousFlight.jsx'
 import NavBar from './components/NavBar.jsx'
 import HomePage from './pages/HomePage.jsx'
 import ResultsPage from './pages/ResultsPage.jsx'
-import { createAppTheme, getStoredMode, getSystemMode, storeMode } from './theme.js'
+import { createAppTheme } from './theme.js'
 import { useFlights } from './hooks/useFlights.js'
 
 // TODO: optional analytics on search (e.g. track params without PII)
@@ -37,17 +37,8 @@ function AppRoutes({ flights }) {
 }
 
 export default function App() {
-  const [mode, setMode] = useState(() => getStoredMode() ?? getSystemMode())
-  const theme = useMemo(() => createAppTheme(mode), [mode])
+  const theme = useMemo(() => createAppTheme(), [])
   const flights = useFlights()
-
-  const toggleMode = () => {
-    setMode((prev) => {
-      const next = prev === 'dark' ? 'light' : 'dark'
-      storeMode(next)
-      return next
-    })
-  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -68,7 +59,7 @@ export default function App() {
               px: { xs: 2, sm: 2.5 },
             }}
           >
-            <NavBar mode={mode} onToggleMode={toggleMode} />
+            <NavBar />
             <AppRoutes flights={flights} />
           </Container>
         </BrowserRouter>

@@ -83,18 +83,13 @@ export default function FiltersBar({
     minWidth: 110,
     transition: 'background-color 140ms ease-out, border-color 140ms ease-out, box-shadow 140ms ease-out',
     '&:hover': {
-      bgcolor: (t) =>
-        t.palette.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(25,118,210,0.06)',
+      bgcolor: 'rgba(25,118,210,0.06)',
       borderColor: 'primary.main',
-      boxShadow: (t) =>
-        t.palette.mode === 'dark'
-          ? '0 0 0 1px rgba(144,202,249,0.5)'
-          : '0 0 0 1px rgba(25,118,210,0.25)',
+      boxShadow: '0 0 0 1px rgba(25,118,210,0.25)',
     },
     '&:focus-visible': {
       outline: 'none',
-      boxShadow: (t) =>
-        `0 0 0 2px ${t.palette.mode === 'dark' ? 'rgba(144,202,249,0.8)' : 'rgba(25,118,210,0.7)'}`,
+      boxShadow: '0 0 0 2px rgba(25,118,210,0.7)',
     },
   }
 
@@ -105,7 +100,7 @@ export default function FiltersBar({
         bgcolor: 'background.paper',
         p: { xs: 1.5, sm: 2 },
         border: '1px solid',
-        borderColor: (t) => (t.palette.mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(11,34,57,0.10)'),
+        borderColor: 'rgba(11,34,57,0.10)',
       }}
     >
       <Box

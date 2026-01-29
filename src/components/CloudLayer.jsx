@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Box, useTheme } from '@mui/material'
+import { Box } from '@mui/material'
 
 const FluffyCloud = ({ top, left, scale, opacity, scrollSpeed, scrollY }) => (
   <Box
@@ -28,8 +28,6 @@ const FluffyCloud = ({ top, left, scale, opacity, scrollSpeed, scrollY }) => (
 
 export default function CloudLayer() {
   const [scrollY, setScrollY] = useState(0)
-  const theme = useTheme()
-  const isDark = theme.palette.mode === 'dark'
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY)
@@ -37,8 +35,8 @@ export default function CloudLayer() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const skyTop = isDark ? '#020A12' : '#77C9FF'
-  const skyBottom = isDark ? '#082844' : '#D0EFFF'
+  const skyTop = '#77C9FF'
+  const skyBottom = '#D0EFFF'
 
   return (
     <Box

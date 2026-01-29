@@ -350,12 +350,9 @@ export default function SearchForm({ onSearch, initialSearchParams, autoSearch =
         bgcolor: 'background.paper',
         borderRadius: 3,
         p: { xs: 2, sm: 2.5 },
-        boxShadow: (t) =>
-          t.palette.mode === 'dark'
-            ? '0 10px 30px rgba(0,0,0,0.35)'
-            : '0 10px 30px rgba(11,34,57,0.10)',
+        boxShadow: '0 10px 30px rgba(11,34,57,0.10)',
         border: '1px solid',
-        borderColor: (t) => (t.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(11,34,57,0.10)'),
+        borderColor: 'rgba(11,34,57,0.10)',
       }}
     >
       <Stack spacing={1.5}>
@@ -471,17 +468,10 @@ export default function SearchForm({ onSearch, initialSearchParams, autoSearch =
               sx={{
                 bgcolor: 'background.paper',
                 border: '1px solid',
-                borderColor: (t) =>
-                  t.palette.mode === 'dark' ? 'rgba(255,255,255,0.22)' : 'rgba(11,34,57,0.2)',
-                boxShadow: (t) =>
-                  t.palette.mode === 'dark'
-                    ? '0 6px 18px rgba(0,0,0,0.6)'
-                    : '0 8px 20px rgba(15,30,50,0.22)',
+                borderColor: 'rgba(11,34,57,0.2)',
+                boxShadow: '0 8px 20px rgba(15,30,50,0.22)',
                 '&:hover': {
-                  bgcolor: (t) =>
-                    t.palette.mode === 'dark'
-                      ? 'rgba(15,30,50,0.95)'
-                      : 'rgba(240,248,255,0.96)',
+                  bgcolor: 'rgba(240,248,255,0.96)',
                 },
                 transition:
                   'transform 160ms ease-out, box-shadow 160ms ease-out, background-color 160ms ease-out',

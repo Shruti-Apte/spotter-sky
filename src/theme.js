@@ -1,36 +1,18 @@
 import { createTheme } from '@mui/material/styles'
 
-export const THEME_STORAGE_KEY = 'spotter-sky:color-mode'
-
-export function getStoredMode() {
-  const value = window.localStorage.getItem(THEME_STORAGE_KEY)
-  return value === 'light' || value === 'dark' ? value : null
-}
-
-export function storeMode(mode) {
-  window.localStorage.setItem(THEME_STORAGE_KEY, mode)
-}
-
-export function getSystemMode() {
-  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-}
-
-export function createAppTheme(mode) {
-  const isDark = mode === 'dark'
-
+export function createAppTheme() {
   return createTheme({
     palette: {
-      mode,
+      mode: 'light',
       primary: { main: '#020079' },
-      // secondary: { main: '#5C6BC0' },
       secondary: { main: '#7C4DFF' },
       background: {
-        default: isDark ? '#071A2A' : '#F6FAFF',
-        paper: isDark ? '#0B2336' : '#FFFFFF',
+        default: '#F6FAFF',
+        paper: '#FFFFFF',
       },
       text: {
-        primary: isDark ? '#EAF2FF' : '#0B2239',
-        secondary: isDark ? 'rgba(234,242,255,0.72)' : 'rgba(11,34,57,0.72)',
+        primary: '#0B2239',
+        secondary: 'rgba(11,34,57,0.72)',
       },
     },
     shape: { borderRadius: 14 },
@@ -53,4 +35,3 @@ export function createAppTheme(mode) {
     },
   })
 }
-

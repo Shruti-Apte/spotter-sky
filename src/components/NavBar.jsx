@@ -1,9 +1,7 @@
 import { Box, Stack, Typography } from '@mui/material'
 import { FlightTakeoff } from '@mui/icons-material'
 
-// mode and onToggleMode reserved for optional dark-mode toggle in header.
-// eslint-disable-next-line no-unused-vars
-export default function NavBar({ mode, onToggleMode }) {
+export default function NavBar() {
   return (
     <Box
       component="header"

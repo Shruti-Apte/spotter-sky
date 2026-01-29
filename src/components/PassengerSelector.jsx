@@ -30,7 +30,7 @@ export default function PassengerSelector({
           width: '49.5%',
           borderRadius: 1,
           border: '1px solid',
-          borderColor: (t) => (t.palette.mode === 'dark' ? 'rgba(255,255,255,0.18)' : 'rgba(11,34,57,0.22)'),
+          borderColor: 'rgba(11,34,57,0.22)',
           px: 1.5,
           py: 0.5,
           height: 40,

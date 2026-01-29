@@ -33,24 +33,19 @@ export default function FlightsTable({ rows }) {
         borderRadius: 2,
         bgcolor: 'background.paper',
         border: '1px solid',
-        borderColor: (t) =>
-          t.palette.mode === 'dark' ? 'rgba(255,255,255,0.10)' : 'rgba(11,34,57,0.12)',
+        borderColor: 'rgba(11,34,57,0.12)',
         overflow: 'hidden',
         '& .MuiDataGrid-root': {
           border: 'none',
           '& .MuiDataGrid-cell': {
-            borderColor: (t) =>
-              t.palette.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(11,34,57,0.08)',
+            borderColor: 'rgba(11,34,57,0.08)',
           },
           '& .MuiDataGrid-columnHeaders': {
-            bgcolor: (t) =>
-              t.palette.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(11,34,57,0.04)',
-            borderColor: (t) =>
-              t.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(11,34,57,0.10)',
+            bgcolor: 'rgba(11,34,57,0.04)',
+            borderColor: 'rgba(11,34,57,0.10)',
           },
           '& .MuiDataGrid-row:hover': {
-            bgcolor: (t) =>
-              t.palette.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(11,34,57,0.03)',
+            bgcolor: 'rgba(11,34,57,0.03)',
           },
         },
       }}

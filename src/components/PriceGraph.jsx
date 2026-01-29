@@ -12,7 +12,7 @@ export default function PriceGraph({ points, loading }) {
         bgcolor: 'background.paper',
         p: { xs: 2, sm: 2.5 },
         border: '1px solid',
-        borderColor: (t) => (t.palette.mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(11,34,57,0.12)'),
+        borderColor: 'rgba(11,34,57,0.12)',
         height: { xs: 220, sm: 260 },
         position: 'relative',
       }}
