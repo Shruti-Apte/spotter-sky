@@ -1,0 +1,11 @@
+/* Keep global CSS intentionally minimal.
+   MUI Theme + CssBaseline handle the bulk of styling. */
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}
