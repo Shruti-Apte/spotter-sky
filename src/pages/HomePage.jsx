@@ -93,7 +93,7 @@ export default function HomePage({ onSearch }) {
             color="text.secondary"
             sx={{ maxWidth: '100%', fontSize: '0.9rem' }}
           >
-            Search, compare, and book, no hidden fees.
+            Search, compare, and book no hidden fees.
           </Typography>
           {/* Search — more padding */}
         <Box sx={{ py: 2 }}>

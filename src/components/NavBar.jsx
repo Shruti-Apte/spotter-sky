@@ -1,5 +1,6 @@
 import { Box, Stack, Typography } from '@mui/material'
 import { FlightTakeoff } from '@mui/icons-material'
+import { Link } from 'react-router-dom'
 
 export default function NavBar() {
   return (
@@ -13,7 +14,14 @@ export default function NavBar() {
       }}
     >
       <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
-        <Stack direction="row" alignItems="center" spacing={1}>
+        <Stack
+          component={Link}
+          to="/"
+          direction="row"
+          alignItems="center"
+          spacing={1}
+          sx={{ textDecoration: 'none', color: 'inherit' }}
+        >
           <Typography
             variant="h5"
             sx={{

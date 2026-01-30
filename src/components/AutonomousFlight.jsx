@@ -29,7 +29,7 @@ export default function AutonomousFlight() {
   const planeContent = (angle = 315) => (
     <Box
       sx={{
-        display: 'flex',
+        display: {'xs': 'none', 'sm': 'flex'},
         alignItems: 'center',
         transform: `rotate(${angle}deg)`,
         animation: `${airBob} 6s ease-in-out infinite`,
