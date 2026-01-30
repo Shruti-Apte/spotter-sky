@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import {
   Accordion,
   AccordionDetails,
@@ -6,10 +7,13 @@ import {
   Card,
   CardActionArea,
   Chip,
+  IconButton,
   Stack,
   Typography,
 } from '@mui/material'
 import {
+  ChevronLeft,
+  ChevronRight,
   ExpandMore,
   FlightTakeoff,
   FormatQuote,
@@ -35,8 +39,33 @@ const TRUST_ITEMS = [
   { icon: FlightTakeoff, label: 'No hidden fees' },
 ]
 
-// Landing: hero, search, offers, explore, trust, routes, testimonials, tips, FAQ, footer.
+const EXPLORE_CAROUSEL_INTERVAL_MS = 4500
+const EXPLORE_CARD_WIDTH = 200
+const EXPLORE_CARD_GAP = 16
+
+// Landing sections.
 export default function HomePage({ onSearch }) {
+  const exploreCarouselRef = useRef(null)
+  const [exploreIndex, setExploreIndex] = useState(0)
+  const numExplore = HOME_DESTINATIONS.length
+  const exploreStep = EXPLORE_CARD_WIDTH + EXPLORE_CARD_GAP
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      setExploreIndex((prev) => (prev + 1) % numExplore)
+    }, EXPLORE_CAROUSEL_INTERVAL_MS)
+    return () => clearInterval(t)
+  }, [numExplore])
+
+  useEffect(() => {
+    if (exploreCarouselRef.current) {
+      exploreCarouselRef.current.scrollTo({
+        left: exploreIndex * exploreStep,
+        behavior: 'smooth',
+      })
+    }
+  }, [exploreIndex, exploreStep])
+
   const handleDestinationClick = (item) => {
     const params = buildSearchParamsFromDestination(item)
     onSearch?.(params)
@@ -45,7 +74,7 @@ export default function HomePage({ onSearch }) {
   return (
     <Box sx={{ position: 'relative', zIndex: 1 }}>
       <Stack spacing={6} sx={{ pt: { xs: 3, sm: 5 }, pb: { xs: 8, sm: 10 } }}>
-        {/* Hero — project name bigger, tagline smaller, minimal margin */}
+        {/* Hero */}
         <Box>
           <Typography
             variant="h1"
@@ -64,7 +93,7 @@ export default function HomePage({ onSearch }) {
             color="text.secondary"
             sx={{ maxWidth: '100%', fontSize: '0.9rem' }}
           >
-            Search, compare, and book — no hidden fees.
+            Search, compare, and book, no hidden fees.
           </Typography>
           {/* Search — more padding */}
         <Box sx={{ py: 2 }}>
@@ -74,7 +103,7 @@ export default function HomePage({ onSearch }) {
 
         
 
-        {/* Top offers — image cards (same style as Explore) */}
+        {/* Top offers */}
         <Box>
           <Typography variant="h6" sx={{ fontWeight: 650, mb: 2 }}>
             Top offers
@@ -152,18 +181,62 @@ export default function HomePage({ onSearch }) {
           </Box>
         </Box>
 
-        {/* Explore the world — bigger carousel cards */}
-        <Box>
+         {/* Why book */}
+         <Box
+          sx={{
+            py: 3.5,
+            px: 2,
+            borderRadius: 2,
+            bgcolor: 'background.paper',
+            border: '1px solid',
+            borderColor: 'divider',
+          }}
+        >
+          <Typography variant="h6" fontWeight={650} sx={{ mb: 0.5, textAlign: 'center' }}>
+            Why book with Spotter Sky
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', mb: 2, maxWidth: 420, mx: 'auto' }}>
+            Compare hundreds of routes in one place. No hidden fees, no surprises, just clear prices and a simple booking experience.
+          </Typography>
+          <Stack
+            direction="row"
+            flexWrap="wrap"
+            justifyContent="center"
+            useFlexGap
+            spacing={{ xs: 2, sm: 3 }}
+          >
+            {TRUST_ITEMS.map((item) => {
+              const IconComponent = item.icon
+              return (
+                <Stack key={item.label} alignItems="center" spacing={0.5} sx={{ minWidth: 80 }}>
+                  <IconComponent sx={{ fontSize: 28, color: 'primary.main' }} />
+                  <Typography variant="caption" color="text.secondary">
+                    {item.label}
+                  </Typography>
+                </Stack>
+              )
+            })}
+          </Stack>
+        </Box>
+
+        {/* Explore carousel */}
+        <Box sx={{ position: 'relative' }}>
           <Typography variant="h6" sx={{ fontWeight: 650, mb: 2 }}>
             Explore the world with Spotter Sky
           </Typography>
           <Box
+            ref={exploreCarouselRef}
             sx={{
               display: 'flex',
               gap: 2,
               overflowX: 'auto',
               pb: 1,
               scrollSnapType: 'x mandatory',
+              scrollBehavior: 'smooth',
+              WebkitOverflowScrolling: 'touch',
+              '&::-webkit-scrollbar': { display: 'none' },
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
               '& > *': { scrollSnapAlign: 'start', flexShrink: 0 },
             }}
           >
@@ -226,7 +299,7 @@ export default function HomePage({ onSearch }) {
           </Box>
         </Box>
 
-        {/* Pitch strip — taller */}
+        {/* Pitch strip */}
         <Box
           sx={{
             py: 4,
@@ -243,49 +316,11 @@ export default function HomePage({ onSearch }) {
             Compare prices. Book in one place. No hidden fees.
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Your next trip starts here — Spotter Sky.
+           Spotter Sky, Your next trip starts here.
           </Typography>
         </Box>
-
-        {/* Why book with Spotter Sky — sell the product */}
-        <Box
-          sx={{
-            py: 3.5,
-            px: 2,
-            borderRadius: 2,
-            bgcolor: 'background.paper',
-            border: '1px solid',
-            borderColor: 'divider',
-          }}
-        >
-          <Typography variant="h6" fontWeight={650} sx={{ mb: 0.5, textAlign: 'center' }}>
-            Why book with Spotter Sky
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', mb: 2, maxWidth: 420, mx: 'auto' }}>
-            Compare hundreds of routes in one place. No hidden fees, no surprises — just clear prices and a simple booking experience.
-          </Typography>
-          <Stack
-            direction="row"
-            flexWrap="wrap"
-            justifyContent="center"
-            useFlexGap
-            spacing={{ xs: 2, sm: 3 }}
-          >
-            {TRUST_ITEMS.map((item) => {
-              const IconComponent = item.icon
-              return (
-                <Stack key={item.label} alignItems="center" spacing={0.5} sx={{ minWidth: 80 }}>
-                  <IconComponent sx={{ fontSize: 28, color: 'primary.main' }} />
-                  <Typography variant="caption" color="text.secondary">
-                    {item.label}
-                  </Typography>
-                </Stack>
-              )
-            })}
-          </Stack>
-        </Box>
-
-        {/* Popular routes — placeholder, non-clickable */}
+        
+        {/* Popular routes (placeholder) */}
         <Box>
           <Typography variant="h6" sx={{ fontWeight: 650, mb: 2 }}>
             Popular routes
@@ -306,7 +341,7 @@ export default function HomePage({ onSearch }) {
           </Box>
         </Box>
 
-        {/* Testimonials — placeholder */}
+        {/* Testimonials */}
         <Box>
           <Typography variant="h6" sx={{ fontWeight: 650, mb: 2 }}>
             What travellers say
@@ -338,7 +373,7 @@ export default function HomePage({ onSearch }) {
           </Stack>
         </Box>
 
-        {/* Travel tips — placeholder (replaces newsletter) */}
+        {/* Travel tips */}
         <Box
           sx={{
             py: 3,
@@ -357,7 +392,7 @@ export default function HomePage({ onSearch }) {
               • Book in advance for better prices on popular routes.
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              • Compare one-way and round-trip — sometimes two one-ways can be cheaper.
+              • Compare one-way and round-trip. sometimes two one-ways can be cheaper.
             </Typography>
             <Typography variant="body2" color="text.secondary">
               • Use filters to find nonstop flights or your preferred airline.

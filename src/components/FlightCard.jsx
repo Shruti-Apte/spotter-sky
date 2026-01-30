@@ -17,7 +17,7 @@ import {
   getAircraftLabel,
 } from '../utils/helpers'
 
-// Timeline dot and connector for expanded segment view.
+// Segment timeline (expanded).
 
 function TimelineNode() {
   return (
@@ -66,14 +66,14 @@ function SegmentDetailRow({ segment, getAirlineName, getCabinLabel, getAircraftL
 
   return (
     <Box sx={{ display: 'flex', gap: 2, mb: 0 }}>
-      {/* 1. Timeline Column - Fixed width, no shrink */}
+      {/* Timeline column */}
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', pt: 0.5, width: 20, flexShrink: 0 }}>
         <TimelineNode />
         <TimelineConnector />
         <TimelineNode />
       </Box>
 
-      {/* 2. Content Column */}
+      {/* Content */}
       <Box sx={{ flexGrow: 1, pb: 2, minWidth: 0 }}>
         {/* Departure */}
         <Typography variant="body1" sx={{ fontWeight: 500, lineHeight: 1.2 }}>
@@ -92,7 +92,7 @@ function SegmentDetailRow({ segment, getAirlineName, getCabinLabel, getAircraftL
           {segment.arrivalTime} · {getAirportLabel(segment.arrivalIata)}
         </Typography>
 
-        {/* Footer Details */}
+        {/* Footer */}
         {detailsString && (
           <Typography variant="caption" sx={{ display: 'block', mt: 1, color: 'text.secondary', fontSize: '0.85rem' }}>
             {detailsString}
@@ -194,10 +194,10 @@ export default function FlightCard({ flight, expanded = false, onToggle }) {
       <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
         <Stack spacing={0}>
           
-          {/* --- RESPONSIVE HEADER ROW --- */}
+          {/* Header row */}
           <Box sx={{ p: { xs: 2, sm: 2.5 } }}>
             {isMobile ? (
-              // MOBILE LAYOUT: Stacked Rows
+              // Mobile: stacked
               <Stack spacing={1.5}>
                 {/* Row 1: Airline --- Price */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -215,8 +215,8 @@ export default function FlightCard({ flight, expanded = false, onToggle }) {
                     }} />
                   </Stack>
                 </Box>
-                
-                {/* Row 2: Times --- Duration/Stops */}
+
+                {/* Times | Duration/Stops */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                    <Stack direction="row" spacing={0.5} alignItems="center">
                       <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '1rem' }}>{departureTime}</Typography>
@@ -232,7 +232,7 @@ export default function FlightCard({ flight, expanded = false, onToggle }) {
                 </Box>
               </Stack>
             ) : (
-              // DESKTOP LAYOUT: Single Row
+              // Desktop: single row
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Stack direction="row" alignItems="center" spacing={3} sx={{ flex: 1 }}>
                   <Typography variant="body1" sx={{ fontWeight: 500, minWidth: 120 }}>
@@ -267,7 +267,7 @@ export default function FlightCard({ flight, expanded = false, onToggle }) {
             )}
           </Box>
 
-          {/* --- EXPANDED DETAILS --- */}
+          {/* Expanded segment details */}
           <Collapse in={expanded}>
             <Box sx={{ borderTop: 1, borderColor: 'divider' }}>
               <ExpandedSegmentView

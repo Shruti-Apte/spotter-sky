@@ -2,7 +2,7 @@ import { Box } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
 import { formatPrice } from '../utils/helpers'
 
-// Sort/filter stay in useFlights; table is display-only for this list.
+// Display-only; sort/filter in useFlights.
 const COLUMNS = [
   { field: 'airline', headerName: 'Airline', flex: 1, minWidth: 90 },
   { field: 'departureTime', headerName: 'Depart', width: 80 },

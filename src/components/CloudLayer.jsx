@@ -8,7 +8,7 @@ const FluffyCloud = ({ top, left, scale, opacity, scrollSpeed, scrollY }) => (
       top,
       left,
       opacity,
-      // The magic: clouds at the bottom move much faster to "pull" the group apart
+      // Lower clouds move faster for parallax
       transform: `translateY(${scrollY * scrollSpeed}px) scale(${scale})`,
       pointerEvents: 'none',
       filter: 'blur(10px)',
@@ -57,12 +57,12 @@ export default function CloudLayer() {
       <FluffyCloud top="5%" left="30%" scale={0.7} opacity={0.5} scrollSpeed={0.06} scrollY={scrollY} />
       <FluffyCloud top="3%" left="70%" scale={0.6} opacity={0.4} scrollSpeed={0.04} scrollY={scrollY} />
 
-      {/* MIDDLE ROW */}
+      {/* Middle row */}
       <FluffyCloud top="10%" left="10%" scale={1.0} opacity={0.6} scrollSpeed={0.15} scrollY={scrollY} />
       <FluffyCloud top="12%" left="55%" scale={0.9} opacity={0.7} scrollSpeed={0.18} scrollY={scrollY} />
       <FluffyCloud top="8%" left="-20%" scale={1.1} opacity={0.5} scrollSpeed={0.12} scrollY={scrollY} />
 
-      {/* FRONT ROW (Moves fastest, "breaking away" from the cluster) */}
+      {/* Front row (fastest) */}
       <FluffyCloud top="15%" left="-5%" scale={1.3} opacity={0.8} scrollSpeed={0.4} scrollY={scrollY} />
       <FluffyCloud top="18%" left="40%" scale={1.6} opacity={0.7} scrollSpeed={0.55} scrollY={scrollY} />
       <FluffyCloud top="22%" left="75%" scale={1.4} opacity={0.8} scrollSpeed={0.45} scrollY={scrollY} />

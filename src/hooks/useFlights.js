@@ -109,7 +109,7 @@ export function useFlights() {
     if (!results.length) return []
 
     return results.filter((f) => {
-      // Stops filter
+      // stops
       if (filters.stops.length > 0) {
         const stopsVal = typeof f.stops === 'number' ? f.stops : null
         const matchesStops =
@@ -121,12 +121,12 @@ export function useFlights() {
         if (!matchesStops) return false
       }
 
-      // Airlines filter
+      // airlines
       if (filters.airlines.length > 0 && !filters.airlines.includes(f.airline)) {
         return false
       }
 
-      // Price range filter
+      // price
       if (effectivePriceRange) {
         const [minPrice, maxPrice] = effectivePriceRange
         const priceValue =
@@ -138,7 +138,7 @@ export function useFlights() {
         }
       }
 
-      // Duration filter
+      // duration
       if (effectiveMaxDuration != null && typeof f.durationMinutes === 'number') {
         if (f.durationMinutes > effectiveMaxDuration) return false
       }
@@ -184,7 +184,7 @@ export function useFlights() {
       return { flight: f, priceValue }
     })
 
-    // Bounds from filteredResults so "Best" re-optimizes within the current subset (e.g. non-stop only).
+    // "Best" score uses filtered subset (e.g. non-stop only)
     let minPrice = Number.POSITIVE_INFINITY
     let maxPrice = 0
     let minDur = Number.POSITIVE_INFINITY

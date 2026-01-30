@@ -42,17 +42,17 @@ export default function ResultsPage({ flights }) {
     ].join('|')
   }, [searchParams])
 
-  // Option A: single sorted list so table, cards, and graph stay in sync.
+  // Single list keeps table, cards, graph in sync.
   const sortedFilteredResults = useMemo(
     () => [...(topResults || []), ...(otherResults || [])],
     [topResults, otherResults],
   )
-  const { page, setPage, pageCount, paginatedItems } = usePagination(sortedFilteredResults, 10)
+  const { page, setPage, pageCount, paginatedItems } = usePagination(sortedFilteredResults, 15)
   const [viewMode, setViewMode] = useState('cards')
   const [expandedFlightId, setExpandedFlightId] = useState(null)
   const [searchParamsFromUrl] = useSearchParams()
 
-  // Restore search from URL on reload (persist origin, destination, dates)
+  // Hydrate search from URL on load
   useEffect(() => {
     const origin = searchParamsFromUrl.get('origin')
     const destination = searchParamsFromUrl.get('destination')
@@ -83,7 +83,7 @@ export default function ResultsPage({ flights }) {
           showSubmit={false}
         />
 
-        {/* Inline status above filters/results: error or empty, with clear copy + CTA. */}
+        {/* Error/empty banner + CTA */}
         {(error || (!loading && filteredResults.length === 0)) && (
           <Box
             sx={{
@@ -131,7 +131,7 @@ export default function ResultsPage({ flights }) {
                     variant="outlined"
                     onClick={() => {
                       if (searchParams) {
-                        // Reuse last successful search parameters.
+                        // Retry with last params
                         searchFlights(searchParams)
                       }
                     }}
@@ -171,7 +171,7 @@ export default function ResultsPage({ flights }) {
 
       <PriceGraph points={graphPoints} loading={loading} />
 
-        {/* Sort: pill / chip style – active contained, inactive outlined */}
+        {/* Sort pills */}
         <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
           <Button
             size="medium"
@@ -220,7 +220,7 @@ export default function ResultsPage({ flights }) {
             </Stack>
           </Stack>
           {loading ? (
-            // Skeleton list preserves list height and avoids layout jumps during search.
+            // Skeletons prevent layout jump
             <Stack spacing={1.25} sx={{ py: 0.5 }}>
               <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 0.5 }}>
                 <CircularProgress size={18} />

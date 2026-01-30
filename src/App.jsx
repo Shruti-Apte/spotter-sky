@@ -10,7 +10,7 @@ import ResultsPage from './pages/ResultsPage.jsx'
 import { createAppTheme } from './theme.js'
 import { useFlights } from './hooks/useFlights.js'
 
-// TODO: optional analytics on search (e.g. track params without PII)
+// TODO: analytics (params, no PII)
 function AppRoutes({ flights }) {
   const navigate = useNavigate()
 

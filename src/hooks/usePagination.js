@@ -1,12 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 
-// TODO: when backend supports server-side pagination, this becomes a thin wrapper around page/size params.
+// TODO: server-side pagination → thin wrapper
 const DEFAULT_PAGE_SIZE = 10
 
-/**
- * Client-side pagination over an array. Resets to page 1 when the list changes.
- * Good enough: reset to page 1 when filters or results change so user isn't on an empty page.
- */
+/** Client-side pagination. Resets to page 1 when items change. */
 export function usePagination(items, pageSize = DEFAULT_PAGE_SIZE) {
   const [page, setPage] = useState(1)
 
@@ -21,7 +18,7 @@ export function usePagination(items, pageSize = DEFAULT_PAGE_SIZE) {
     return items.slice(start, start + pageSize)
   }, [items, page, pageSize])
 
-  // Intentional: clamp/reset page when list length or pageCount changes
+  // Clamp page when list/count changes
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage((prev) => {

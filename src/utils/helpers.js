@@ -1,5 +1,4 @@
-// Shared formatters/validators.
-// Airline names by IATA code (common in Amadeus Flight Offers Search / GDS).
+// Formatters + validators. IATA → airline name.
 
 const AIRLINE_NAMES = {
   AA: 'American Airlines',
@@ -64,7 +63,7 @@ const AIRLINE_NAMES = {
   '2B': 'Aerolineas Argentinas',
   '5J': 'Cebu Pacific',
   '6E': 'IndiGo',
-  // Mock / display names used in app
+  // Mock carriers
   AeroBlue: 'AeroBlue',
   CloudNine: 'CloudNine',
   Nimbus: 'Nimbus Air',
@@ -72,8 +71,7 @@ const AIRLINE_NAMES = {
   SkyJet: 'SkyJet',
 }
 
-// Airport IATA code -> city name (for "City (CODE)" display).
-// TODO: optional airport/city lookup from API when we have one.
+// IATA → city (City (CODE)). TODO: API lookup when available.
 const AIRPORT_CITIES = {
   BOM: 'Mumbai', DEL: 'Delhi', BLR: 'Bengaluru', MAA: 'Chennai', HYD: 'Hyderabad',
   CCU: 'Kolkata', COK: 'Kochi', GOI: 'Goa', AMD: 'Ahmedabad', JFK: 'New York',
@@ -88,13 +86,13 @@ const AIRPORT_CITIES = {
   ATL: 'Atlanta', DEN: 'Denver', SEA: 'Seattle', PHX: 'Phoenix', LAS: 'Las Vegas',
 }
 
-// Amadeus cabin codes -> display label.
+// Cabin code → label
 const CABIN_LABELS = {
   Y: 'Economy', M: 'Economy', W: 'Premium economy', C: 'Business', J: 'Business',
   F: 'First', P: 'First',
 }
 
-// IATA aircraft codes (common) -> display name.
+// Aircraft code → name
 const AIRCRAFT_NAMES = {
   '333': 'Airbus A330', '339': 'Airbus A330neo', '359': 'Airbus A350', '388': 'Airbus A380',
   '320': 'Airbus A320', '321': 'Airbus A321', '319': 'Airbus A319', '32N': 'Airbus A320neo',
@@ -103,11 +101,7 @@ const AIRCRAFT_NAMES = {
   E90: 'Embraer E190', E95: 'Embraer E195', CR9: 'Bombardier CRJ900',
 }
 
-/**
- * Returns "City (CODE)" for display. Falls back to code only if city unknown.
- * @param {string} iata - Airport IATA code
- * @returns {string}
- */
+/** City (CODE); code only if unknown. */
 export function getAirportLabel(iata) {
   if (iata == null || String(iata).trim() === '') return '—'
   const code = String(iata).trim().toUpperCase()
@@ -115,44 +109,28 @@ export function getAirportLabel(iata) {
   return city ? `${city} (${code})` : code
 }
 
-/**
- * Returns display name for an airline by IATA code or carrier name. Falls back to the input if unknown.
- * @param {string} code - IATA code (e.g. "AA") or carrier name
- * @returns {string}
- */
+/** IATA or carrier name → display name; fallback to input. */
 export function getAirlineName(code) {
   if (code == null || String(code).trim() === '') return '—'
   const key = String(code).trim()
   return AIRLINE_NAMES[key] ?? key
 }
 
-/**
- * Returns cabin class label from Amadeus cabin code.
- * @param {string} code - e.g. "Y", "C", "W"
- * @returns {string}
- */
+/** Cabin code → label (Y/C/W etc). */
 export function getCabinLabel(code) {
   if (code == null || String(code).trim() === '') return ''
   const key = String(code).trim().toUpperCase()
   return CABIN_LABELS[key] ?? code
 }
 
-/**
- * Returns aircraft display name from IATA aircraft code.
- * @param {string} code - e.g. "333", "738"
- * @returns {string}
- */
+/** Aircraft code → display name. */
 export function getAircraftLabel(code) {
   if (code == null || String(code).trim() === '') return ''
   const key = String(code).trim()
   return AIRCRAFT_NAMES[key] ?? code
 }
 
-/**
- * Formats a price for display. Handles missing/invalid values.
- * @param {{ total?: number; currency?: string } | null} price
- * @returns {string}
- */
+/** Price for display; handles missing/invalid. */
 export function formatPrice(price) {
   if (price == null) return '—'
   const total = price.total

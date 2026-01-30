@@ -8,7 +8,7 @@ import {
   Stack,
   TextField,
   Typography,
-  IconButton
+  IconButton,
 } from '@mui/material'
 import { SwapHoriz } from '@mui/icons-material'
 import PassengerSelector from './PassengerSelector.jsx'
@@ -49,8 +49,7 @@ function useLocationSearch(input, optionsSetter, recentOptions = []) {
       return
     }
 
-    // Intentional: effect kicks off async fetch; loading set here, cleared in then/catch
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- async fetch, loading flag
     setLoading(true)
     const controller = new AbortController()
     abortRef.current = controller
@@ -59,7 +58,6 @@ function useLocationSearch(input, optionsSetter, recentOptions = []) {
       .then((results) => {
         if (controller.signal.aborted) return
         if (!results.length) {
-          // Silent fallback: include typed value as freeSolo option
           results.push({ label: keyword, iata: keyword.toUpperCase() })
         }
         cacheRef.current.set(cacheKey, results)
@@ -79,18 +77,15 @@ function useLocationSearch(input, optionsSetter, recentOptions = []) {
   return loading
 }
 
-// showSubmit: true on homepage, false on results (auto-search)
 export default function SearchForm({ onSearch, initialSearchParams, autoSearch = false, showSubmit = true }) {
   const today = useMemo(() => new Date().toISOString().slice(0, 10), [])
 
-  // --- Trip & Date ---
   const [tripType, setTripType] = useState(
     initialSearchParams?.returnDate ? 'ROUND_TRIP' : 'ONE_WAY',
   )
   const [departureDate, setDepartureDate] = useState(initialSearchParams?.departureDate ?? '')
   const [returnDate, setReturnDate] = useState(initialSearchParams?.returnDate ?? '')
 
-  // --- Origin / Destination ---
   const [originLabel, setOriginLabel] = useState(initialSearchParams?.originLabel ?? '')
   const [originIata, setOriginIata] = useState(initialSearchParams?.origin ?? '')
   const [destinationLabel, setDestinationLabel] = useState(initialSearchParams?.destinationLabel ?? '')
@@ -98,8 +93,6 @@ export default function SearchForm({ onSearch, initialSearchParams, autoSearch =
 
   const [originOptions, setOriginOptions] = useState([])
   const [destinationOptions, setDestinationOptions] = useState([])
-
-  // --- Recent searches (in-memory + localStorage); seed when empty ---
   const [recentSearches, setRecentSearches] = useState([])
 
   useEffect(() => {
@@ -108,13 +101,11 @@ export default function SearchForm({ onSearch, initialSearchParams, autoSearch =
       if (raw) {
         const parsed = JSON.parse(raw)
         if (Array.isArray(parsed) && parsed.length > 0) {
-          // Intentional: hydrate recent searches from localStorage on mount
-          // eslint-disable-next-line react-hooks/set-state-in-effect
+          // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrate from storage once
           setRecentSearches(parsed.slice(0, RECENT_SEARCHES_MAX))
           return
         }
       }
-      // Seed defaults when history is empty
       setRecentSearches(DEFAULT_RECENT_SEARCHES.slice(0, RECENT_SEARCHES_MAX))
     } catch {
       setRecentSearches(DEFAULT_RECENT_SEARCHES.slice(0, RECENT_SEARCHES_MAX))
@@ -124,10 +115,7 @@ export default function SearchForm({ onSearch, initialSearchParams, autoSearch =
   const recentOriginOptions = useMemo(
     () =>
       recentSearches
-        .map((s) => ({
-          label: s.originLabel || s.origin,
-          iata: s.origin,
-        }))
+        .map((s) => ({ label: s.originLabel || s.origin, iata: s.origin }))
         .filter((o, index, arr) => o.iata && arr.findIndex((x) => x.iata === o.iata) === index)
         .slice(0, RECENT_SEARCHES_MAX),
     [recentSearches],
@@ -136,27 +124,20 @@ export default function SearchForm({ onSearch, initialSearchParams, autoSearch =
   const recentDestinationOptions = useMemo(
     () =>
       recentSearches
-        .map((s) => ({
-          label: s.destinationLabel || s.destination,
-          iata: s.destination,
-        }))
+        .map((s) => ({ label: s.destinationLabel || s.destination, iata: s.destination }))
         .filter((o, index, arr) => o.iata && arr.findIndex((x) => x.iata === o.iata) === index)
         .slice(0, RECENT_SEARCHES_MAX),
     [recentSearches],
   )
 
   const originLoading = useLocationSearch(originLabel, setOriginOptions, recentOriginOptions)
-  const destinationLoading = useLocationSearch(
-    destinationLabel,
-    setDestinationOptions,
-    recentDestinationOptions,
+  const destinationLoading = useLocationSearch(destinationLabel, setDestinationOptions, recentDestinationOptions)
+
+  const filteredDestinationOptions = useMemo(
+    () => destinationOptions.filter((o) => o.iata !== originIata),
+    [destinationOptions, originIata],
   )
 
-  const filteredDestinationOptions = useMemo(() => {
-    return destinationOptions.filter((o) => o.iata !== originIata)
-  }, [destinationOptions, originIata])
-
-  // --- Passengers & Travel Class ---
   const [adults, setAdults] = useState(initialSearchParams?.passengers?.adults ?? 1)
   const [children, setChildren] = useState(0)
   const [travelClass, setTravelClass] = useState(initialSearchParams?.travelClass ?? 'ECONOMY')
@@ -175,27 +156,23 @@ export default function SearchForm({ onSearch, initialSearchParams, autoSearch =
         })
       : null,
   )
+  const departureInputRef = useRef(null)
+  const returnInputRef = useRef(null)
 
-  // --- Helper functions ---
   const validate = useCallback(() => {
     const nextErrors = {}
-
     if (!originIata || !/^[A-Z]{3}$/.test(originIata))
       nextErrors.origin = 'Enter a valid 3-letter IATA code or select a suggestion.'
     if (!destinationIata || !/^[A-Z]{3}$/.test(destinationIata))
       nextErrors.destination = 'Enter a valid 3-letter IATA code or select a suggestion.'
     if (originIata && destinationIata && originIata === destinationIata)
       nextErrors.destination = 'Destination must be different from origin.'
-
     if (!departureDate) nextErrors.departureDate = 'Departure date is required.'
     if (departureDate && departureDate < today)
       nextErrors.departureDate = 'Departure date cannot be in the past.'
-
     if (tripType === 'ROUND_TRIP' && returnDate && returnDate < departureDate)
       nextErrors.returnDate = 'Return date must be on or after departure date.'
-
     if (!travelClass) nextErrors.travelClass = 'Travel class is required.'
-
     setErrors(nextErrors)
     return { isValid: Object.keys(nextErrors).length === 0 }
   }, [originIata, destinationIata, departureDate, returnDate, travelClass, tripType, today])
@@ -212,7 +189,6 @@ export default function SearchForm({ onSearch, initialSearchParams, autoSearch =
         passengers: { adults: params.passengers?.adults ?? 1 },
         travelClass: params.travelClass,
       }
-
       setRecentSearches((prev) => {
         const existingIndex = prev.findIndex(
           (s) =>
@@ -224,15 +200,13 @@ export default function SearchForm({ onSearch, initialSearchParams, autoSearch =
             s.travelClass === entry.travelClass,
         )
         const next = [...prev]
-        if (existingIndex !== -1) {
-          next.splice(existingIndex, 1)
-        }
+        if (existingIndex !== -1) next.splice(existingIndex, 1)
         next.unshift(entry)
         const trimmed = next.slice(0, RECENT_SEARCHES_MAX)
         try {
           window.localStorage.setItem('spotter-sky:recent-searches', JSON.stringify(trimmed))
         } catch {
-          // Ignore storage errors (e.g. quota, private mode)
+          // localStorage full/disabled
         }
         return trimmed
       })
@@ -240,8 +214,8 @@ export default function SearchForm({ onSearch, initialSearchParams, autoSearch =
     [originLabel, destinationLabel],
   )
 
-  const buildSearchParams = useCallback(() => {
-    return {
+  const buildSearchParams = useCallback(
+    () => ({
       origin: originIata,
       originLabel,
       destination: destinationIata,
@@ -250,17 +224,20 @@ export default function SearchForm({ onSearch, initialSearchParams, autoSearch =
       returnDate: returnDate || undefined,
       passengers: { adults: Number(adults) || 1 },
       travelClass,
-    }
-  }, [
-    adults,
-    departureDate,
-    destinationIata,
-    destinationLabel,
-    originIata,
-    originLabel,
-    returnDate,
-    travelClass,
-  ])
+    }),
+    [adults, departureDate, destinationIata, destinationLabel, originIata, originLabel, returnDate, travelClass],
+  )
+
+  const handleSwap = useCallback(() => {
+    setOriginLabel((prev) => {
+      setDestinationLabel(prev)
+      return destinationLabel
+    })
+    setOriginIata((prev) => {
+      setDestinationIata(prev)
+      return destinationIata
+    })
+  }, [destinationLabel, destinationIata])
 
   const handleSubmit = useCallback(
     (e) => {
@@ -271,7 +248,6 @@ export default function SearchForm({ onSearch, initialSearchParams, autoSearch =
         setFormError('Please fix the highlighted fields and try again.')
         return
       }
-
       const searchParams = buildSearchParams()
       persistRecentSearch(searchParams)
       onSearch?.(searchParams)
@@ -279,7 +255,6 @@ export default function SearchForm({ onSearch, initialSearchParams, autoSearch =
     [buildSearchParams, onSearch, persistRecentSearch, validate],
   )
 
-  // --- Handlers ---
   const onChangeDeparture = useCallback(
     (value) => {
       setDepartureDate(value)
@@ -301,7 +276,6 @@ export default function SearchForm({ onSearch, initialSearchParams, autoSearch =
     }
   }, [])
 
-  // Auto-search (Results page): debounce and trigger search when core inputs change.
   const autoSearchKey = useDebounce(
     JSON.stringify({
       origin: originIata,
@@ -315,14 +289,10 @@ export default function SearchForm({ onSearch, initialSearchParams, autoSearch =
   )
 
   useEffect(() => {
-    if (!autoSearch) return
-    if (!onSearch) return
-
-    // Intentional: validate() sets errors; we need validity before auto-search
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (!autoSearch || !onSearch) return
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- validate() sets formError; run on param change
     const { isValid } = validate()
     if (!isValid) return
-
     const searchParams = buildSearchParams()
     const nextKey = JSON.stringify({
       origin: searchParams.origin,
@@ -332,13 +302,20 @@ export default function SearchForm({ onSearch, initialSearchParams, autoSearch =
       adults: searchParams.passengers.adults,
       travelClass: searchParams.travelClass,
     })
-
     if (lastSearchKeyRef.current === nextKey) return
     lastSearchKeyRef.current = nextKey
-
     persistRecentSearch(searchParams)
     onSearch(searchParams)
   }, [autoSearch, autoSearchKey, buildSearchParams, onSearch, persistRecentSearch, validate])
+
+  const swapButtonSx = {
+    bgcolor: 'background.paper',
+    border: '1px solid',
+    borderColor: 'rgba(11,34,57,0.2)',
+    boxShadow: '0 8px 20px rgba(15,30,50,0.22)',
+    '&:hover': { bgcolor: 'rgba(240,248,255,0.96)' },
+    transition: 'transform 160ms ease-out, box-shadow 160ms ease-out, background-color 160ms ease-out',
+  }
 
   return (
     <Box
@@ -356,7 +333,6 @@ export default function SearchForm({ onSearch, initialSearchParams, autoSearch =
       }}
     >
       <Stack spacing={1.5}>
-        {/* Trip Type */}
         <Stack direction="row" spacing={1} sx={{ justifyContent: 'flex-start' }}>
           <Button
             size="small"
@@ -374,7 +350,6 @@ export default function SearchForm({ onSearch, initialSearchParams, autoSearch =
           </Button>
         </Stack>
 
-        {/* Origin / Destination with swap */}
         <Box sx={{ position: 'relative' }}>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
             <Autocomplete
@@ -438,14 +413,14 @@ export default function SearchForm({ onSearch, initialSearchParams, autoSearch =
             />
           </Stack>
 
-          {/* Swap button: placed between origin/destination on desktop, near destination on mobile. */}
           <Box
             sx={{
               position: 'absolute',
-              right: { xs: 8, sm: '50%' },
-              bottom: { xs: -18, sm: '50%' },
+              left: { xs: '50%', sm: 'auto' },
+              right: { xs: 'auto', sm: '50%' },
+              bottom: { xs: '30%', sm: '50%' },
               transform: {
-                xs: 'translateY(0)',
+                xs: 'translateX(-50%)',
                 sm: 'translate(50%, 50%)',
               },
             }}
@@ -453,65 +428,47 @@ export default function SearchForm({ onSearch, initialSearchParams, autoSearch =
             <IconButton
               size="small"
               aria-label="Swap origin and destination"
-              onClick={() => {
-                setOriginLabel((prevOriginLabel) => {
-                  const nextOriginLabel = destinationLabel
-                  setDestinationLabel(prevOriginLabel)
-                  return nextOriginLabel
-                })
-                setOriginIata((prevOriginIata) => {
-                  const nextOriginIata = destinationIata
-                  setDestinationIata(prevOriginIata)
-                  return nextOriginIata
-                })
-              }}
-              sx={{
-                bgcolor: 'background.paper',
-                border: '1px solid',
-                borderColor: 'rgba(11,34,57,0.2)',
-                boxShadow: '0 8px 20px rgba(15,30,50,0.22)',
-                '&:hover': {
-                  bgcolor: 'rgba(240,248,255,0.96)',
-                },
-                transition:
-                  'transform 160ms ease-out, box-shadow 160ms ease-out, background-color 160ms ease-out',
-              }}
+              onClick={handleSwap}
+              sx={swapButtonSx}
             >
               <SwapHoriz fontSize="small" />
             </IconButton>
           </Box>
         </Box>
 
-        {/* Dates */}
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
           <TextField
             fullWidth
             label="Depart"
             type="date"
             size="small"
+            inputRef={departureInputRef}
             InputLabelProps={{ shrink: true }}
             inputProps={{ min: today }}
             value={departureDate}
             onChange={(e) => onChangeDeparture(e.target.value)}
+            onClick={() => departureInputRef.current?.showPicker?.()}
             error={Boolean(errors.departureDate)}
             helperText={errors.departureDate}
+            sx={{ cursor: 'pointer' }}
           />
           <TextField
             fullWidth
             label="Return"
             type="date"
             size="small"
+            inputRef={returnInputRef}
             InputLabelProps={{ shrink: true }}
             inputProps={{ min: departureDate || today }}
             value={returnDate}
             onChange={(e) => setReturnDate(e.target.value)}
+            onClick={() => returnInputRef.current?.showPicker?.()}
             error={Boolean(errors.returnDate)}
             helperText={errors.returnDate}
-            sx={{ display: tripType === 'ROUND_TRIP' ? 'block' : 'none' }}
+            sx={{ display: tripType === 'ROUND_TRIP' ? 'block' : 'none', cursor: 'pointer' }}
           />
         </Stack>
 
-        {/* Passengers + Class */}
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
           <PassengerSelector
             adults={adults}
@@ -520,7 +477,6 @@ export default function SearchForm({ onSearch, initialSearchParams, autoSearch =
             onChildrenChange={setChildren}
             maxPassengers={MAX_PASSENGERS}
           />
-
           <TextField
             fullWidth
             select

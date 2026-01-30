@@ -1,5 +1,5 @@
 import { Box, Skeleton, Typography } from '@mui/material'
-import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { Area, AreaChart, Label, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
 export default function PriceGraph({ points, loading }) {
   const showSkeleton = loading && points.length === 0
@@ -13,19 +13,25 @@ export default function PriceGraph({ points, loading }) {
         p: { xs: 2, sm: 2.5 },
         border: '1px solid',
         borderColor: 'rgba(11,34,57,0.12)',
-        height: { xs: 220, sm: 260 },
+        height: { xs: 260, sm: 300 },
         position: 'relative',
       }}
     >
-      <Typography variant="subtitle1" sx={{ fontWeight: 800, mb: 1 }}>
-        Price trends
-      </Typography>
+      <Box sx={{ mb: 0.5 }}>
+        <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
+          Price trends
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }}>
+          Across current results (sorted by price).
+        </Typography>
+      </Box>
 
       {showSkeleton ? (
         <Skeleton variant="rectangular" sx={{ mt: 1.5, borderRadius: 2 }} height="70%" />
       ) : points.length === 0 ? (
         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          No price data yet. Run a search or adjust filters.
+          No price data yet. Run a search or adjust filters. The graph updates when you change
+          filters.
         </Typography>
       ) : (
         <Box sx={{ mt: 1, height: '70%', position: 'relative' }}>
@@ -36,26 +42,39 @@ export default function PriceGraph({ points, loading }) {
                 tickLine={false}
                 axisLine={false}
                 tick={{ fontSize: 11 }}
-              />
+              >
+                <Label value="Flight Option (by price)" position="insideBottom" offset={-4} style={{ fontSize: 11 }} />
+              </XAxis>
               <YAxis
                 tickLine={false}
                 axisLine={false}
                 tick={{ fontSize: 11 }}
                 tickFormatter={(v) => `$${v}`}
-              />
+              >
+                <Label value="Price" angle={-95} position="insideLeft" style={{ fontSize: 11 }} />
+              </YAxis>
               <Tooltip
-                formatter={(value) => [`$${value}`, 'Price']}
-                labelFormatter={(label, items) =>
-                  `Option ${label}${
-                    items?.[0]?.payload?.airline ? ` • ${items[0].payload.airline}` : ''
-                  }`
-                }
-                // Micro-interaction: slightly elevated, theme-aware tooltip panel.
-                contentStyle={{
-                  borderRadius: 12,
-                  border: '1px solid rgba(11,34,57,0.12)',
-                  boxShadow: '0 8px 24px rgba(15,30,50,0.25)',
-                  padding: '8px 10px',
+                content={({ active, payload }) => {
+                  if (!active || !payload?.length) return null
+                  const p = payload[0].payload
+                  return (
+                    <Box
+                      sx={{
+                        borderRadius: 12,
+                        border: '1px solid rgba(11,34,57,0.12)',
+                        boxShadow: '0 8px 24px rgba(15,30,50,0.25)',
+                        p: 1.25,
+                        bgcolor: 'background.paper',
+                      }}
+                    >
+                      <Typography variant="body2" fontWeight={600}>
+                        Option {p.index} {p.airline ? `• ${p.airline}` : ''}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        ${Number(p.price).toFixed(0)} — Sorted by price (cheapest first)
+                      </Typography>
+                    </Box>
+                  )
                 }}
               />
               <Area
@@ -76,7 +95,6 @@ export default function PriceGraph({ points, loading }) {
             </AreaChart>
           </ResponsiveContainer>
           {loading && points.length > 0 ? (
-            // Overlay skeleton during refetch to suggest activity without layout shift.
             <Skeleton
               variant="rectangular"
               height="100%"
@@ -93,4 +111,3 @@ export default function PriceGraph({ points, loading }) {
     </Box>
   )
 }
-

@@ -1,4 +1,4 @@
-// Amadeus flight + location APIs; token cached in memory. In production, use a backend proxy.
+// Amadeus APIs; token in-memory. Prod: use backend proxy.
 const AMADEUS_BASE_URL = 'https://test.api.amadeus.com'
 const TOKEN_BUFFER_MS = 60_000
 const DEFAULT_TOKEN_EXPIRY_SEC = 1800
@@ -148,7 +148,7 @@ function normalizeFlightOffer(offer) {
 
 function parseIsoDurationToMinutes(value) {
   if (!value || typeof value !== 'string') return null
-  // Simple ISO-8601 duration parser for patterns like "PT10H20M".
+  // PT10H20M → minutes
   const match = value.match(/PT(?:(\d+)H)?(?:(\d+)M)?/)
   if (!match) return null
   const hours = match[1] ? Number(match[1]) : 0
@@ -157,7 +157,7 @@ function parseIsoDurationToMinutes(value) {
 }
 
 function dateTimeToMinutes(isoString) {
-  // Use local time extracted from ISO string: "YYYY-MM-DDTHH:mm:ss"
+  // Local time from ISO (HH:mm)
   const timePart = isoString.split('T')[1] ?? ''
   const [hStr, mStr] = timePart.split(':')
   const h = Number(hStr ?? 0)
@@ -199,7 +199,7 @@ async function searchFlightsAmadeus(searchParams) {
   })
 
   if (!response.ok) {
-    // If error message is not available, use a default message
+    // Fallback when API error body missing
     let message = 'Amadeus flight search failed'
     try {
       const err = await response.json()
@@ -207,7 +207,7 @@ async function searchFlightsAmadeus(searchParams) {
         message = err.errors[0].detail
       }
     } catch {
-      // ignore JSON parse errors
+      // ignore parse errors
     }
     throw new Error(message)
   }
@@ -219,7 +219,7 @@ async function searchFlightsAmadeus(searchParams) {
     .map((offer) => normalizeFlightOffer(offer))
     .filter((f) => f !== null)
 
-  // If nothing normalizes, fall back to empty list; UI will show empty state.
+  // Empty list → UI empty state
   return normalized
 }
 
@@ -371,7 +371,7 @@ export async function searchFlightsMock(searchParams) {
     const segments = []
     const layovers = []
     let t = f.departureMinutes
-    // Build segments and layovers for expanded card when Amadeus is unavailable.
+    // Mock segments/layovers for expanded card (no Amadeus)
     for (let i = 0; i < segCount; i++) {
       const isFirst = i === 0
       const isLast = i === segCount - 1

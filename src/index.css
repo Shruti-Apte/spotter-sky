@@ -1,5 +1,4 @@
-/* Keep global CSS intentionally minimal.
-   MUI Theme + CssBaseline handle the bulk of styling. */
+/* Minimal globals; MUI does the rest. */
 html,
 body,
 #root {

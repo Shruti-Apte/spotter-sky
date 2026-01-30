@@ -1,4 +1,4 @@
-// Homepage marketing content: offers and explore destinations.
+// Offers + explore destinations.
 
 const getDefaultDepartureDate = () => {
   const d = new Date()
@@ -6,36 +6,38 @@ const getDefaultDepartureDate = () => {
   return d.toISOString().slice(0, 10)
 }
 
-// Default origin when user clicks an offer/destination (avoids empty-origin validation error).
+// Prevents empty-origin validation when clicking offer/destination.
 export const DEFAULT_ORIGIN_FOR_OFFERS = {
   origin: 'DEL',
   originLabel: 'New Delhi (DEL)',
 }
 
-// Unsplash image IDs (w=400) for offers and explore; use landmark/country imagery.
+// Unsplash w=400 for offers/explore.
 const U = (id) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=400&q=80`
+// Picsum fallback for destinations where Unsplash IDs are unreliable
+const P = (seed, w = 400, h = 300) => `https://picsum.photos/seed/${seed}/${w}/${h}`
 
 export const HOME_OFFERS = [
   { id: 'dubai', title: 'Dubai', subtitle: 'From major cities', destination: 'DXB', destinationLabel: 'Dubai (DXB)', badge: 'Popular', imageUrl: U('1512453979798-5ea266f8880c') },
   { id: 'london', title: 'London', subtitle: 'Weekend getaways', destination: 'LHR', destinationLabel: 'London (LHR)', badge: null, imageUrl: U('1513635269975-59663e0ac1ad') },
   { id: 'singapore', title: 'Singapore', subtitle: 'Asia gateway', destination: 'SIN', destinationLabel: 'Singapore (SIN)', badge: null, imageUrl: U('1525625293386-3f8f99389edd') },
-  { id: 'bangkok', title: 'Bangkok', subtitle: 'Best value', destination: 'BKK', destinationLabel: 'Bangkok (BKK)', badge: 'Deal', imageUrl: U('1528183928295-88a94fcdd936') },
+  { id: 'bangkok', title: 'Bangkok', subtitle: 'Best value', destination: 'BKK', destinationLabel: 'Bangkok (BKK)', badge: 'Deal', imageUrl: P('thailand-bangkok') },
 ]
 
 export const HOME_DESTINATIONS = [
-  { id: 'in', label: 'India', destination: 'DEL', destinationLabel: 'New Delhi (DEL)', imageUrl: U('1564507592333-c60657eea523') },
+  { id: 'us', label: 'USA', destination: 'JFK', destinationLabel: 'New York (JFK)', imageUrl: U('1496442226666-8d4d0e62e6e9') },
   { id: 'ae', label: 'UAE', destination: 'DXB', destinationLabel: 'Dubai (DXB)', imageUrl: U('1512453979798-5ea266f8880c') },
-  { id: 'th', label: 'Thailand', destination: 'BKK', destinationLabel: 'Bangkok (BKK)', imageUrl: U('1528183928295-88a94fcdd936') },
+  { id: 'in', label: 'India', destination: 'DEL', destinationLabel: 'New Delhi (DEL)', imageUrl: U('1564507592333-c60657eea523') },
+  { id: 'th', label: 'Thailand', destination: 'BKK', destinationLabel: 'Bangkok (BKK)', imageUrl: P('thailand-bangkok') },
   { id: 'sg', label: 'Singapore', destination: 'SIN', destinationLabel: 'Singapore (SIN)', imageUrl: U('1525625293386-3f8f99389edd') },
   { id: 'uk', label: 'UK', destination: 'LHR', destinationLabel: 'London (LHR)', imageUrl: U('1513635269975-59663e0ac1ad') },
-  { id: 'us', label: 'USA', destination: 'JFK', destinationLabel: 'New York (JFK)', imageUrl: U('1496442226666-8d4d0e62e6e9') },
   { id: 'fr', label: 'France', destination: 'CDG', destinationLabel: 'Paris (CDG)', imageUrl: U('1502602898657-3e91760cbb34') },
   { id: 'jp', label: 'Japan', destination: 'NRT', destinationLabel: 'Tokyo (NRT)', imageUrl: U('1540959733332-eab4deabeeaf') },
-  { id: 'au', label: 'Australia', destination: 'SYD', destinationLabel: 'Sydney (SYD)', imageUrl: U('1523482580671-f31bfd0e2f6b') },
+  { id: 'au', label: 'Australia', destination: 'SYD', destinationLabel: 'Sydney (SYD)', imageUrl: U('1544551763-46a013bb70d5') },
   { id: 'ch', label: 'Switzerland', destination: 'ZRH', destinationLabel: 'Zurich (ZRH)', imageUrl: U('1531366936337-7c912a4589a7') },
 ]
 
-// Placeholder content for scrollable homepage; no behaviour.
+// Placeholder copy; no behaviour.
 export const HOME_POPULAR_ROUTES = [
   'Delhi → Dubai',
   'Mumbai → Singapore',
@@ -48,9 +50,9 @@ export const HOME_POPULAR_ROUTES = [
 ]
 
 export const HOME_TESTIMONIALS = [
-  { quote: 'Found the best price in minutes. No hassle.', name: 'Priya M.' },
-  { quote: 'Clean search, clear results. Will use again.', name: 'Rahul K.' },
-  { quote: 'Easy to compare flights. Great experience.', name: 'Anita S.' },
+  { quote: 'Found the best price in minutes. No hassle.', name: 'Jennifer M.' },
+  { quote: 'Clean search, clear results. Will use again.', name: 'Michael K.' },
+  { quote: 'Easy to compare flights. Great experience.', name: 'Sarah T.' },
 ]
 
 export const HOME_FAQS = [

@@ -13,7 +13,9 @@ import {
   ListItemText,
   Checkbox,
   Radio,
+  useTheme,
 } from '@mui/material'
+import { alpha } from '@mui/material/styles'
 
 export default function FiltersBar({
   filters,
@@ -23,10 +25,14 @@ export default function FiltersBar({
   onChangeFilters,
   loading = false,
 }) {
+  const theme = useTheme()
   const [stopsAnchor, setStopsAnchor] = useState(null)
   const [airlinesAnchor, setAirlinesAnchor] = useState(null)
   const [priceAnchor, setPriceAnchor] = useState(null)
   const [durationAnchor, setDurationAnchor] = useState(null)
+
+  const stopsActive = (filters.stops ?? []).length > 0
+  const airlinesActive = (filters.airlines ?? []).length > 0
 
   const toggleAirline = (airline) => {
     const current = filters.airlines ?? []
@@ -53,6 +59,15 @@ export default function FiltersBar({
       ? Math.max(minDuration, Math.min(filters.maxDurationMinutes, maxDuration))
       : maxDuration
 
+  const priceActive =
+    filters.priceRange != null &&
+    priceRangeBounds &&
+    (filters.priceRange[0] > minPrice || filters.priceRange[1] < maxPrice)
+  const durationActive =
+    filters.maxDurationMinutes != null &&
+    durationBounds &&
+    filters.maxDurationMinutes < maxDuration
+
   const stopsValue = (filters.stops && filters.stops[0]) ?? null
   let stopsLabel = 'Stops'
   if (stopsValue === 0) stopsLabel = 'Nonstop'
@@ -78,18 +93,29 @@ export default function FiltersBar({
     durationLabel = `up to ${h}h ${m}m`
   }
 
+  const primaryMain = theme.palette.primary.main
   const filterChipSx = {
     borderRadius: 999,
     minWidth: 110,
     transition: 'background-color 140ms ease-out, border-color 140ms ease-out, box-shadow 140ms ease-out',
     '&:hover': {
-      bgcolor: 'rgba(25,118,210,0.06)',
+      bgcolor: alpha(primaryMain, 0.08),
       borderColor: 'primary.main',
-      boxShadow: '0 0 0 1px rgba(25,118,210,0.25)',
+      boxShadow: `0 0 0 1px ${alpha(primaryMain, 0.25)}`,
     },
     '&:focus-visible': {
       outline: 'none',
-      boxShadow: '0 0 0 2px rgba(25,118,210,0.7)',
+      boxShadow: `0 0 0 2px ${primaryMain}`,
+    },
+  }
+  const activeChipSx = {
+    bgcolor: 'primary.main',
+    color: 'primary.contrastText',
+    borderColor: 'primary.main',
+    '&:hover': {
+      bgcolor: 'primary.dark',
+      borderColor: 'primary.dark',
+      color: 'primary.contrastText',
     },
   }
 
@@ -135,7 +161,8 @@ export default function FiltersBar({
                 size="small"
                 label={stopsLabel}
                 onClick={(e) => setStopsAnchor(e.currentTarget)}
-                sx={filterChipSx}
+                onDelete={stopsActive ? (e) => { e.stopPropagation(); onChangeFilters({ stops: [] }) } : undefined}
+                sx={stopsActive ? { ...filterChipSx, ...activeChipSx } : filterChipSx}
               />
               {availableAirlines.length > 0 && (
                 <Chip
@@ -143,7 +170,8 @@ export default function FiltersBar({
                   size="small"
                   label={airlinesLabel}
                   onClick={(e) => setAirlinesAnchor(e.currentTarget)}
-                  sx={filterChipSx}
+                  onDelete={airlinesActive ? (e) => { e.stopPropagation(); onChangeFilters({ airlines: [] }) } : undefined}
+                  sx={airlinesActive ? { ...filterChipSx, ...activeChipSx } : filterChipSx}
                 />
               )}
               {priceRangeBounds && (
@@ -152,7 +180,8 @@ export default function FiltersBar({
                   size="small"
                   label={priceLabel}
                   onClick={(e) => setPriceAnchor(e.currentTarget)}
-                  sx={filterChipSx}
+                  onDelete={priceActive ? (e) => { e.stopPropagation(); onChangeFilters({ priceRange: null }) } : undefined}
+                  sx={priceActive ? { ...filterChipSx, ...activeChipSx } : filterChipSx}
                 />
               )}
               {durationBounds && (
@@ -161,7 +190,8 @@ export default function FiltersBar({
                   size="small"
                   label={durationLabel}
                   onClick={(e) => setDurationAnchor(e.currentTarget)}
-                  sx={{ ...filterChipSx, minWidth: 120 }}
+                  onDelete={durationActive ? (e) => { e.stopPropagation(); onChangeFilters({ maxDurationMinutes: null }) } : undefined}
+                  sx={durationActive ? { ...filterChipSx, ...activeChipSx, minWidth: 120 } : { ...filterChipSx, minWidth: 120 }}
                 />
               )}
             </>
@@ -208,7 +238,7 @@ export default function FiltersBar({
         </List>
       </Popover>
 
-      {/* Airlines popover (multi-select) */}
+      {/* Airlines */}
       <Popover
         open={Boolean(airlinesAnchor)}
         anchorEl={airlinesAnchor}
@@ -264,7 +294,7 @@ export default function FiltersBar({
         )}
       </Popover>
 
-      {/* Duration popover with slider */}
+      {/* Duration */}
       <Popover
         open={Boolean(durationAnchor)}
         anchorEl={durationAnchor}
